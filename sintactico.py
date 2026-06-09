@@ -1,19 +1,8 @@
-"""
-sintactico.py — Análisis sintáctico (OE2)
-Valida que las instrucciones tengan la estructura correcta.
-Regla: IDENTIFICADOR = VALOR [OPERADOR VALOR ...]
-"""
+# sintactico.py - Analisis sintactico (OE2)
+# Valida que las instrucciones tengan la estructura correcta
+# Regla esperada: IDENTIFICADOR = VALOR [OPERADOR VALOR ...]
 
-# ── Colores ANSI ──────────────────────────────────────────────────────────────
-RESET    = "\033[0m"
-BOLD     = "\033[1m"
-VERDE    = "\033[92m"
-ROJO     = "\033[91m"
-CYAN     = "\033[96m"
-GRIS     = "\033[90m"
-AMARILLO = "\033[93m"
-
-VALORES_VALIDOS   = {'NUMERO', 'CADENA', 'BOOLEANO', 'IDENTIFICADOR'}
+VALORES_VALIDOS    = {'NUMERO', 'CADENA', 'BOOLEANO', 'IDENTIFICADOR'}
 OPERADORES_VALIDOS = {'SUMA', 'RESTA', 'MULT', 'DIV'}
 
 
@@ -21,39 +10,43 @@ def analizar_sintactico(tokens):
     errores = []
 
     if not tokens:
-        errores.append("Instrucción vacía")
+        errores.append("Instruccion vacia")
         return errores
 
     if len(tokens) < 3:
-        errores.append("Instrucción incompleta: se necesita VARIABLE = VALOR")
+        errores.append("Instruccion incompleta, se necesita: VARIABLE = VALOR")
         return errores
 
+    # El primer token debe ser una variable
     if tokens[0][0] != 'IDENTIFICADOR':
-        errores.append(f"Se esperaba una variable al inicio, se encontró: '{tokens[0][1]}'")
+        errores.append(f"Se esperaba una variable al inicio, se encontro: '{tokens[0][1]}'")
 
+    # El segundo token debe ser el signo igual
     if tokens[1][0] != 'ASIGNACION':
-        errores.append(f"Se esperaba '=', se encontró: '{tokens[1][1]}'")
+        errores.append(f"Se esperaba '=', se encontro: '{tokens[1][1]}'")
 
+    # El tercer token debe ser un valor valido
     if tokens[2][0] not in VALORES_VALIDOS:
-        errores.append(f"Valor inválido tras '=': '{tokens[2][1]}'")
+        errores.append(f"Valor invalido despues de '=': '{tokens[2][1]}'")
 
+    # Si hay mas tokens, deben seguir el patron: OPERADOR VALOR
     i = 3
     while i < len(tokens):
         if tokens[i][0] not in OPERADORES_VALIDOS:
-            errores.append(f"Operador inválido: '{tokens[i][1]}'")
+            errores.append(f"Operador invalido: '{tokens[i][1]}'")
             break
         i += 1
         if i >= len(tokens):
-            errores.append("Falta un valor después del operador")
+            errores.append("Falta un valor despues del operador")
             break
         if tokens[i][0] not in VALORES_VALIDOS:
-            errores.append(f"Se esperaba un valor, se encontró: '{tokens[i][1]}'")
+            errores.append(f"Se esperaba un valor, se encontro: '{tokens[i][1]}'")
         i += 1
 
     return errores
 
 
-# ── Ejecución directa ─────────────────────────────────────────────────────────
+# Prueba del modulo
 if __name__ == "__main__":
     from lexico import analizar_lexico
 
@@ -67,28 +60,25 @@ if __name__ == "__main__":
         'resultado = y',
     ]
 
-    ancho = 55
-    print(f"\n{BOLD}{CYAN}  ╔{'═' * ancho}╗")
-    print(f"  ║{'  📐  ANÁLISIS SINTÁCTICO — OE2':^{ancho}}║")
-    print(f"  ╚{'═' * ancho}╝{RESET}\n")
+    print("\n--- ANALISIS SINTACTICO (OE2) ---\n")
 
-    ok = err = 0
+    ok = 0
+    err = 0
     for i, codigo in enumerate(ejemplos, 1):
         tokens, err_lex = analizar_lexico(codigo)
-        print(f"  {BOLD}{i:>2}.{RESET} {AMARILLO}{codigo:<32}{RESET}", end="  ")
+        print(f"{i}. Instruccion: {codigo}")
         if err_lex:
-            print(f"{ROJO}❌ Error léxico: {err_lex[0]}{RESET}")
+            print(f"   Error lexico: {err_lex[0]}")
             err += 1
         else:
             errores = analizar_sintactico(tokens)
             if errores:
-                print(f"{ROJO}❌ Error sintáctico{RESET}")
                 for e in errores:
-                    print(f"      {ROJO}↳ {e}{RESET}")
+                    print(f"   Error sintactico: {e}")
                 err += 1
             else:
-                print(f"{VERDE}✅ Sintaxis correcta{RESET}")
+                print(f"   Estado: OK")
                 ok += 1
+        print()
 
-    print(f"\n  {GRIS}{'─' * ancho}")
-    print(f"  Total: {len(ejemplos)} | ✅ {ok} correctas | ❌ {err} con errores{RESET}\n")
+    print(f"Total: {len(ejemplos)} | Correctas: {ok} | Con errores: {err}\n")

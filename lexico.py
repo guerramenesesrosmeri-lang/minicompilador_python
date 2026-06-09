@@ -1,20 +1,9 @@
-"""
-lexico.py — Análisis léxico (OE1)
-Reconoce tokens del lenguaje de asignaciones.
-"""
+# lexico.py - Analisis lexico (OE1)
+# Reconoce los tokens del lenguaje de asignaciones
 
 import re
 
-# ── Colores ANSI ──────────────────────────────────────────────────────────────
-RESET  = "\033[0m"
-BOLD   = "\033[1m"
-VERDE  = "\033[92m"
-ROJO   = "\033[91m"
-CYAN   = "\033[96m"
-GRIS   = "\033[90m"
-AMARILLO = "\033[93m"
-
-# ── Definición de tokens ──────────────────────────────────────────────────────
+# Definicion de los tipos de tokens que acepta el lenguaje
 TOKENS = [
     ('NUMERO',        r'\d+(\.\d+)?'),
     ('CADENA',        r'"[^"]*"'),
@@ -31,6 +20,7 @@ TOKENS = [
     ('DESCONOCIDO',   r'.'),
 ]
 
+
 def analizar_lexico(codigo):
     tokens_encontrados = []
     errores = []
@@ -43,22 +33,22 @@ def analizar_lexico(codigo):
             if m:
                 valor = m.group(0)
                 if tipo == 'ESPACIO':
-                    pass
+                    pass  # los espacios se ignoran
                 elif tipo == 'DESCONOCIDO':
-                    errores.append(f"Token desconocido: '{valor}' en posición {posicion}")
+                    errores.append(f"Token desconocido: '{valor}' en posicion {posicion}")
                 else:
                     tokens_encontrados.append((tipo, valor))
                 posicion = m.end()
                 match = m
                 break
         if not match:
-            errores.append(f"Error en posición {posicion}")
+            errores.append(f"Error en posicion {posicion}")
             posicion += 1
 
     return tokens_encontrados, errores
 
 
-# ── Ejecución directa ─────────────────────────────────────────────────────────
+# Prueba del modulo
 if __name__ == "__main__":
     ejemplos = [
         'x = 10',
@@ -70,19 +60,15 @@ if __name__ == "__main__":
         'dato = @invalido',
     ]
 
-    ancho = 55
-    print(f"\n{BOLD}{CYAN}  ╔{'═' * ancho}╗")
-    print(f"  ║{'  🔍  ANÁLISIS LÉXICO — OE1':^{ancho}}║")
-    print(f"  ╚{'═' * ancho}╝{RESET}\n")
+    print("\n--- ANALISIS LEXICO (OE1) ---\n")
 
     for i, codigo in enumerate(ejemplos, 1):
         tokens, errores = analizar_lexico(codigo)
-        estado = f"{VERDE}✅ OK{RESET}" if not errores else f"{ROJO}❌ ERROR{RESET}"
-        print(f"  {BOLD}{i:>2}.{RESET} {AMARILLO}{codigo:<32}{RESET} {estado}")
-        print(f"      {GRIS}Tokens: {tokens}{RESET}")
+        print(f"{i}. Instruccion: {codigo}")
+        print(f"   Tokens: {tokens}")
         if errores:
             for e in errores:
-                print(f"      {ROJO}↳ {e}{RESET}")
+                print(f"   Error: {e}")
+        else:
+            print(f"   Estado: OK")
         print()
-
-    print(f"  {GRIS}{'─' * ancho}{RESET}\n")
