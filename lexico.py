@@ -49,7 +49,7 @@ def analizar_lexico(codigo):
 if __name__ == "__main__":
     ejemplos = [
         'x = 10',
-        'nombre = "Gina"',
+        'nombre = "Alejandro"',
         'total = x + 3',
         'resultado = (x + 5) * 2',
         'activo = True',
